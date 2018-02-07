@@ -3,17 +3,24 @@
 #include "SDLEvent.hpp"
 class Player
 {
+
+
+private:
+	Vector2 PositionVector;
+	
+
 public:
 
-	
 	Player();
 	~Player();
 
 	void Update(SDL_KeyboardEvent);
 	void Render();
 
-private:
-	Vector2 PositionVector;
+	void move(Vector2);
+	void MoveForward(void);
+	void RotateLeft	(void);
+	void RotateRight(void); 
 
 
 

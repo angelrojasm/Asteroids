@@ -126,7 +126,7 @@ namespace Engine
 	{
 		Paint x;
 	
-		glClearColor(x.bleu.R, x.bleu.G,x.bleu.B,x.bleu.A);
+		glClearColor(0,0,0,1);
 		glClear(GL_COLOR_BUFFER_BIT);
 		Ship.Render();
 		/*glBegin(GL_LINE_LOOP);
