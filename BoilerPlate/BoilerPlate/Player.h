@@ -18,6 +18,7 @@ public:
 	void Render();
 
 	void move(Vector2);
+	float warp(float, int, int);
 	void MoveForward(void);
 	void RotateLeft	(void);
 	void RotateRight(void); 

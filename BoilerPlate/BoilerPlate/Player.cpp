@@ -1,7 +1,10 @@
 #include "Player.h"
 #include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
-
+const int minWidthBorder = -568;
+const int maxWidthBorder = 568;
+const int minHeightBorder = -320;
+const int maxHeightBorder = 320;
 
 Player::Player()
 {
@@ -14,11 +17,27 @@ Player::~Player()
 {
 }
 
-
+float::Player::warp(float AxisPosition, int MinBorder, int MaxBorder) {
+	if (AxisPosition < MinBorder) {
+		AxisPosition = MaxBorder + (MinBorder - AxisPosition);
+		return AxisPosition;
+	}
+	
+	if (AxisPosition > MaxBorder) {
+		AxisPosition = MinBorder - (AxisPosition - MaxBorder);
+		return AxisPosition;
+	}
+	return AxisPosition;
+}
 void::Player::move(Vector2 UnitVector) {
 
 	PositionVector.X_coordinate += UnitVector.X_coordinate;
 	PositionVector.Y_coordinate += UnitVector.Y_coordinate;
+
+	PositionVector.X_coordinate = warp(PositionVector.X_coordinate, minWidthBorder, maxWidthBorder);
+	PositionVector.Y_coordinate = warp(PositionVector.Y_coordinate, minHeightBorder, maxHeightBorder);
+
+
 }
 
 void::Player::Update(SDL_KeyboardEvent keyBoardEvent)
@@ -28,31 +47,19 @@ void::Player::Update(SDL_KeyboardEvent keyBoardEvent)
 
 	case SDL_SCANCODE_W:
 		move(Vector2(0, 10));
-		if (PositionVector.Y_coordinate >= 310) {
-			PositionVector.Y_coordinate = -310;
-		}
 		break;
 
 	case SDL_SCANCODE_A:
 		move(Vector2(-10, 0));
-		if (PositionVector.X_coordinate <= -570) {
-			PositionVector.X_coordinate = 560;
-		}
 		break;
 
 	case SDL_SCANCODE_S:
 		move(Vector2(0, -10));
-		if (PositionVector.Y_coordinate <= -320) {
-			PositionVector.Y_coordinate = 300;
-		}
 		break;
 
 	case SDL_SCANCODE_D:
 		
 		move(Vector2(10, 0));
-		if (PositionVector.X_coordinate >= 570) {
-			PositionVector.X_coordinate = -560;
-		}
 		break;
 	default:
 		SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
