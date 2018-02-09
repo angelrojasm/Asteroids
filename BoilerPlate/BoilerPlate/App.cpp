@@ -80,9 +80,31 @@ namespace Engine
 	}
 
 	void App::OnKeyDown(SDL_KeyboardEvent keyBoardEvent)
-	{		
-		Ship.Update(keyBoardEvent);
+	{
+		switch (keyBoardEvent.keysym.scancode) {
+
+		case SDL_SCANCODE_W:
+			Ship.move(Vector2(0, 10));
+			break;
+
+		case SDL_SCANCODE_A:
+			Ship.move(Vector2(-10, 0));
+			break;
+
+		case SDL_SCANCODE_S:
+			Ship.move(Vector2(0, -10));
+			break;
+
+		case SDL_SCANCODE_D:
+
+			Ship.move(Vector2(10, 0));
+			break;
+		default:
+			SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
+			break;
+		}
 	}
+
 
 	void App::OnKeyUp(SDL_KeyboardEvent keyBoardEvent)
 	{

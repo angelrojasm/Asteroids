@@ -40,32 +40,6 @@ void::Player::move(Vector2 UnitVector) {
 
 }
 
-void::Player::Update(SDL_KeyboardEvent keyBoardEvent)
-{
-
-	switch (keyBoardEvent.keysym.scancode) {
-
-	case SDL_SCANCODE_W:
-		move(Vector2(0, 10));
-		break;
-
-	case SDL_SCANCODE_A:
-		move(Vector2(-10, 0));
-		break;
-
-	case SDL_SCANCODE_S:
-		move(Vector2(0, -10));
-		break;
-
-	case SDL_SCANCODE_D:
-		
-		move(Vector2(10, 0));
-		break;
-	default:
-		SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
-		break;
-	}
-}
 	void Player::Render()
 	{
 		glLoadIdentity();

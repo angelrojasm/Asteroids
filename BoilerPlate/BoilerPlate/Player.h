@@ -14,7 +14,6 @@ public:
 	Player();
 	~Player();
 
-	void Update(SDL_KeyboardEvent);
 	void Render();
 
 	void move(Vector2);
