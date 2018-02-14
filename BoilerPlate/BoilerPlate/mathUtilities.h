@@ -2,6 +2,9 @@
 class mathUtilities
 {
 public:
+	
+	const float pi = 3.1415926535897932384626433832795028841971693f;
+
 	mathUtilities();
 	~mathUtilities();
 	
@@ -19,6 +22,4 @@ public:
 
 };
 
-
-	
 

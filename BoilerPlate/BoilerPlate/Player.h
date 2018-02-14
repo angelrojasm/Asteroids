@@ -7,6 +7,10 @@ class Player
 
 private:
 	Vector2 PositionVector;
+	bool IsThrusting;
+	float OrientationAngle;
+	float mass;
+
 	
 
 public:
@@ -21,7 +25,10 @@ public:
 	void MoveForward(void);
 	void RotateLeft	(void);
 	void RotateRight(void); 
-
+	bool getIsThrusting(void);
+	void setIsThrusting(bool);
+	void setOrientationAngle(float);
+	float getOrientationAngle(void);
 
 
 };

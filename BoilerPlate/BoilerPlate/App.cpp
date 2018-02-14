@@ -11,6 +11,9 @@
 namespace Engine
 {
 	Player Ship;
+	const float MovementUnits = 5;
+	const float RotationAngle = 10;
+
 	const float DESIRED_FRAME_RATE = 60.0f;
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
 
@@ -84,20 +87,22 @@ namespace Engine
 		switch (keyBoardEvent.keysym.scancode) {
 
 		case SDL_SCANCODE_W:
-			Ship.move(Vector2(0, 10));
+			Ship.setIsThrusting(true);
+			Ship.MoveForward();
 			break;
 
 		case SDL_SCANCODE_A:
-			Ship.move(Vector2(-10, 0));
+			Ship.RotateLeft();
+			//Ship.move(Vector2(-MovementUnits, 0));
 			break;
 
 		case SDL_SCANCODE_S:
-			Ship.move(Vector2(0, -10));
+			//Ship.move(Vector2(0, -MovementUnits));
 			break;
 
 		case SDL_SCANCODE_D:
-
-			Ship.move(Vector2(10, 0));
+			Ship.RotateRight();
+			//Ship.move(Vector2(MovementUnits, 0));
 			break;
 		default:
 			SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
@@ -108,6 +113,7 @@ namespace Engine
 
 	void App::OnKeyUp(SDL_KeyboardEvent keyBoardEvent)
 	{
+		Ship.setIsThrusting(false);
 		switch (keyBoardEvent.keysym.scancode)
 		{
 		case SDL_SCANCODE_ESCAPE:
