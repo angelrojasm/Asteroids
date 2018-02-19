@@ -1,34 +1,27 @@
 #pragma once
 #include "Vector2.h"
-#include "SDLEvent.hpp"
-class Player
+#include "Entity.h"
+class Player: public Entity
 {
 
 
 private:
-	Vector2 PositionVector;
-	bool IsThrusting;
-	float OrientationAngle;
-	float mass;
 
+	bool IsThrusting;
+	std::vector<Vector2> ThrusterContainer;
 	
 
 public:
 
 	Player();
 	~Player();
-
-	void Render();
-
-	void move(Vector2);
-	float warp(float, int, int);
+					
+	void Render(void) override;
 	void MoveForward(void);
 	void RotateLeft	(void);
 	void RotateRight(void); 
 	bool getIsThrusting(void);
 	void setIsThrusting(bool);
-	void setOrientationAngle(float);
-	float getOrientationAngle(void);
 
 
 };

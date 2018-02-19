@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "Paint.h"
 #include "Player.h"
+#include "Asteroid.h"
 
 // OpenGL includes
 #include <GL/glew.h>
@@ -11,7 +12,7 @@
 namespace Engine
 {
 	Player Ship;
-	const float MovementUnits = 5;
+	Asteroid asteroid;
 	const float RotationAngle = 10;
 
 	const float DESIRED_FRAME_RATE = 60.0f;
@@ -93,16 +94,16 @@ namespace Engine
 
 		case SDL_SCANCODE_A:
 			Ship.RotateLeft();
-			//Ship.move(Vector2(-MovementUnits, 0));
+			
 			break;
 
 		case SDL_SCANCODE_S:
-			//Ship.move(Vector2(0, -MovementUnits));
+		
 			break;
 
 		case SDL_SCANCODE_D:
 			Ship.RotateRight();
-			//Ship.move(Vector2(MovementUnits, 0));
+
 			break;
 		default:
 			SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
@@ -157,6 +158,7 @@ namespace Engine
 		glClearColor(0,0,0,1);
 		glClear(GL_COLOR_BUFFER_BIT);
 		Ship.Render();
+		asteroid.Render();
 		/*glBegin(GL_LINE_LOOP);
 		glVertex2f(50.0, 50.0);
 		glVertex2f(50.0, -50.0);
