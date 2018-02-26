@@ -9,6 +9,11 @@
 // Asteroids
 #include "SDLEvent.hpp"
 #include "TimeManager.hpp"
+#include "MathUtilities.h"
+#include "Player.h"
+#include "Asteroid.h"
+#include "Entity.h"
+#include <vector>
 
 namespace Engine
 {
@@ -66,6 +71,7 @@ namespace Engine
 		SDL_GLContext						m_context;
 		GameState::State					m_state;
 		Engine::TimeManager*				m_timer;
+	
 
 	};
 }

@@ -1,9 +1,10 @@
 #pragma once
 #include "Vector2.h"
 #include "Entity.h"
+#include <vector>
 class Asteroid: public Entity
 {
-
+public:
 	struct AsteroidSize {
 
 		enum size {
@@ -12,19 +13,20 @@ class Asteroid: public Entity
 			BIG = 2
 		};
 	};
+	Asteroid();
+	Asteroid(Asteroid::AsteroidSize::size, float, float, float);
+	~Asteroid();
+
+
+	void Update(float) override;
+	void Render(void) override;
+	AsteroidSize::size getSize(void);
+	void ApplyImpulse(Vector2);
 
 private:
 	AsteroidSize::size Size;
 
-public:
-	Asteroid();
-	Asteroid(Asteroid::AsteroidSize::size);
-	~Asteroid();
 
-
-	void Update(void);
-	void Render(void) override;
-	AsteroidSize::size getSize(void);
 
 };
 

@@ -4,16 +4,91 @@
 #include "Paint.h"
 #include "Player.h"
 #include "Asteroid.h"
+#include "Bullet.h"
+#include <ctime>
 
 // OpenGL includes
 #include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
 
+std::vector<Asteroid> Asteroid_Vector;
+std::vector<Bullet> Bullet_Vector;
+Player Ship;
+Bullet currentBullet;
+
+bool IsEmpty(std::vector<Asteroid> VectorToEvaluate) {
+	return VectorToEvaluate.size() == 0;
+}
+void Asteroid_Creation(int Asteroid_Quantity) {
+	srand(time(NULL));
+
+	for (int i = 0; i < Asteroid_Quantity; i++) {
+		float Asteroid_X_Position = rand() % 1136;
+		if (Asteroid_X_Position > 568) {
+			Asteroid_X_Position -= 568;
+			Asteroid_X_Position *= -1;
+		}
+		float Asteroid_Y_Position = rand() % 640;
+		if (Asteroid_Y_Position > 320) {
+			Asteroid_Y_Position -= 320;
+			Asteroid_Y_Position *= -1;
+		}
+		float Asteroid_Orientation_Angle = rand() % 361;
+		int Asteroid_Size = rand() % 3;
+
+		
+		Asteroid_Vector.push_back(Asteroid((Asteroid::AsteroidSize::size)Asteroid_Size, Asteroid_Orientation_Angle, Asteroid_X_Position, Asteroid_Y_Position));
+		
+	}
+
+}
+
+void Asteroid_Deletion(int Asteroid_Quantity) {
+	if (!IsEmpty(Asteroid_Vector)) {
+		for (int i = 0;i < Asteroid_Quantity;i++) {
+			Asteroid_Vector.pop_back();
+		}
+	}
+}
+
+
+void CreateLineSegments()
+{
+	if (Ship.getDebugging() && !Ship.HasCollided())
+	{
+		Vector2 ShipSpace = Ship.getPositionVector();
+		Vector2 AsteroidPosition;
+		float	AreaMeasurement = Ship.getRadius() * 2;
+		float AsteroidRadius;
+		float Distance;
+		float DistanceToCircle;
+
+		glLoadIdentity();
+		glBegin(GL_LINE_LOOP);
+		for (int i = 0; i <=Asteroid_Vector.size(); i++)
+		{
+			AsteroidPosition = (Asteroid_Vector[i]).getPositionVector();
+			AsteroidRadius = (Asteroid_Vector[i]).getRadius();
+			Distance = Ship.EntityDistance((Asteroid_Vector[i]));
+
+			//Take into consideration the Asteroid's radius
+			DistanceToCircle = AreaMeasurement + AsteroidRadius;
+
+			if (Distance <= DistanceToCircle)
+			{
+				glColor3f(1.0, 0.0, 0.0); //Make line red
+				glVertex2f(ShipSpace.X_coordinate,ShipSpace.Y_coordinate);
+				glVertex2f(AsteroidPosition.X_coordinate,AsteroidPosition.Y_coordinate);
+			}
+
+			//Reset color to white
+			glColor3f(1.0, 1.0, 1.0);
+		}
+		glEnd();
+	}
+}
 namespace Engine
 {
-	Player Ship;
-	Asteroid asteroid;
-	const float RotationAngle = 10;
 
 	const float DESIRED_FRAME_RATE = 60.0f;
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
@@ -28,6 +103,8 @@ namespace Engine
 	{
 		m_state = GameState::UNINITIALIZED;
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
+		Asteroid_Creation(5);
+
 	}
 
 	App::~App()
@@ -87,29 +164,44 @@ namespace Engine
 	{
 		switch (keyBoardEvent.keysym.scancode) {
 
-		case SDL_SCANCODE_W:
+		case SDL_SCANCODE_UP:
 			Ship.setIsThrusting(true);
 			Ship.MoveForward();
 			break;
 
-		case SDL_SCANCODE_A:
+		case SDL_SCANCODE_LEFT:
 			Ship.RotateLeft();
-			
+
 			break;
 
-		case SDL_SCANCODE_S:
-		
-			break;
-
-		case SDL_SCANCODE_D:
+		case SDL_SCANCODE_RIGHT:
 			Ship.RotateRight();
 
+			break;
+		case SDL_SCANCODE_P:
+			Asteroid_Creation(1);
+
+			break;
+		case SDL_SCANCODE_O:
+			Asteroid_Deletion(1);
+
+			break;
+		case SDL_SCANCODE_D:
+			for (int i = 0;i < Asteroid_Vector.size();i++) {
+				Asteroid_Vector[i].setDebugging(true);
+			}
+			Ship.setDebugging(true);
+			break;
+		case SDL_SCANCODE_SPACE:
+			/*currentBullet = Ship.Shoot();*/
+			Bullet_Vector.push_back(currentBullet);
 			break;
 		default:
 			SDL_Log("%S was pressed.", keyBoardEvent.keysym.scancode);
 			break;
 		}
 	}
+
 
 
 	void App::OnKeyUp(SDL_KeyboardEvent keyBoardEvent)
@@ -120,6 +212,11 @@ namespace Engine
 		case SDL_SCANCODE_ESCAPE:
 			OnExit();
 			break;
+		case SDL_SCANCODE_D:
+			for (int i = 0;i < Asteroid_Vector.size();i++) {
+				Asteroid_Vector[i].setDebugging(false);
+			}
+			Ship.setDebugging(false);
 		default:
 			//DO NOTHING
 			break;
@@ -128,11 +225,15 @@ namespace Engine
 
 	void App::Update()
 	{
-	
+		
 		double startTime = m_timer->GetElapsedTimeInSeconds();
 
 		// Update code goes here
 		//
+		Ship.Update(DESIRED_FRAME_TIME);
+		for (int i = 0; i < Asteroid_Vector.size();i++) {
+			Asteroid_Vector[i].Update(DESIRED_FRAME_TIME);
+		}
 
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
@@ -154,17 +255,19 @@ namespace Engine
 	void App::Render()
 	{
 		Paint x;
-	
+		
 		glClearColor(0,0,0,1);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+
 		Ship.Render();
-		asteroid.Render();
-		/*glBegin(GL_LINE_LOOP);
-		glVertex2f(50.0, 50.0);
-		glVertex2f(50.0, -50.0);
-		glVertex2f(-50.0, -50.0);
-		glVertex2f(-50.0, 50.0);
-		glEnd();*/
+		for (int i = 0;i <Asteroid_Vector.size();i++) {
+			Asteroid_Vector[i].Render();
+		}
+
+
+		CreateLineSegments();
+	
 
 		SDL_GL_SwapWindow(m_mainWindow);
 	}
