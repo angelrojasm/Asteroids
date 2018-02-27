@@ -9,11 +9,8 @@
 // Asteroids
 #include "SDLEvent.hpp"
 #include "TimeManager.hpp"
-#include "MathUtilities.h"
 #include "Player.h"
-#include "Asteroid.h"
-#include "Entity.h"
-#include <vector>
+#include "Asteroid.hpp"
 
 namespace Engine
 {
@@ -45,6 +42,11 @@ namespace Engine
 		bool Init							( );
 		void Update							( );
 		void Render							( );
+		void Asteroid_Creation				(int);
+		void Asteroid_Deletion				(int);
+		void CreateLineSegments				( );
+		void PlayerCrash					( );
+		void BulletCrash					( );
 	private:
 		/* =============================================================
 		 * PRIVATE FUNCTIONS
@@ -71,7 +73,11 @@ namespace Engine
 		SDL_GLContext						m_context;
 		GameState::State					m_state;
 		Engine::TimeManager*				m_timer;
-	
+		Player*								Ship;
+		std::vector<Asteroid*>				AsteroidVector;
+		std::vector<Entity*>				EntityVector;
+		std::vector<Bullet*>				BulletVector;
+
 
 	};
 }

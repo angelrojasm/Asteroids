@@ -9,6 +9,7 @@ Entity::Entity()
 	Acceleration = 0.166f;
 	Velocity = 0;
 	Debugging = false;
+	Collision = false;
 }
 
 
@@ -19,7 +20,7 @@ Entity::~Entity()
 
 void::Entity::setDebugging(bool newValue) {
 	Debugging = newValue;
-	
+
 }
 
 bool::Entity::getDebugging() {
@@ -139,7 +140,7 @@ void::Entity::Render() {
 
 void::Entity::Update(float deltaTime) {
 
-	
+
 	PositionVector.X_coordinate += (Velocity.X_coordinate * deltaTime);
 	PositionVector.Y_coordinate += (Velocity.Y_coordinate * deltaTime);
 

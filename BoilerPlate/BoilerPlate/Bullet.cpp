@@ -1,14 +1,15 @@
-#include "Bullet.h"
+#include "Bullet.hpp"
 
 const float MaxDistance = 100.0f;
+
 
 Bullet::Bullet()
 {
 	TravelledDistance = 0;
 	Radius = 4;
 	IsActive = true;
-}
 
+}
 
 void::Bullet::ApplyImpulse(Vector2 Impulse) {
 
@@ -24,7 +25,7 @@ void::Bullet::ApplyImpulse(Vector2 Impulse) {
 
 void::Bullet::Update(float deltaTime)
 {
-	
+
 	if (TravelledDistance < MaxDistance)
 		TravelledDistance++;
 	else
@@ -40,13 +41,15 @@ void::Bullet::Render(void)
 		glLoadIdentity();
 		glPointSize(3.0f);
 		glBegin(GL_POINTS);
-		glVertex2f(PositionVector.X_coordinate,PositionVector.Y_coordinate);
+		glVertex2f(PositionVector.X_coordinate, PositionVector.Y_coordinate);
 		glEnd();
 
-		
+
 		CreateEntityBounds();
 	}
 }
+
+
 
 bool::Bullet::getStatus(void)
 {

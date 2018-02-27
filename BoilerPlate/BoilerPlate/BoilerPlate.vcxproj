@@ -189,8 +189,8 @@ copy /Y "$(SolutionDir)\Externals\SDL2-2.0.4\lib\x64\SDL2.dll" "$(TargetDir)SDL2
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
-    <ClInclude Include="Asteroid.h" />
-    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Asteroid.hpp" />
+    <ClInclude Include="Bullet.hpp" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="mathUtilities.h" />

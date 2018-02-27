@@ -1,8 +1,8 @@
 #pragma once
-#include "Vector2.h"
 #include "Entity.h"
+#include "Vector2.h"
 #include <vector>
-class Asteroid: public Entity
+class Asteroid : public Entity
 {
 public:
 	struct AsteroidSize {
@@ -17,7 +17,6 @@ public:
 	Asteroid(Asteroid::AsteroidSize::size, float, float, float);
 	~Asteroid();
 
-
 	void Update(float) override;
 	void Render(void) override;
 	AsteroidSize::size getSize(void);
@@ -25,7 +24,6 @@ public:
 
 private:
 	AsteroidSize::size Size;
-
 
 
 };
