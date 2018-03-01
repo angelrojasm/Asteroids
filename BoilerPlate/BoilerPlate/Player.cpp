@@ -10,7 +10,7 @@ Player::Player()
 {
 	PositionVector = Vector2(0.0f,0.0f);
 	IsThrusting = false;
-	Radius = 18;
+	Radius = 16;
 	RenderingContainer.push_back(Vector2(0, 20));
 	RenderingContainer.push_back(Vector2(12, -10));
 	RenderingContainer.push_back(Vector2(6, -4));
@@ -73,8 +73,8 @@ Position.Y_coordinate =RenderingContainer[0].Y_coordinate * cosf(math.degreestor
 Vector2 BulletSpeed;
 
 
-BulletSpeed.X_coordinate = (Velocity.X_coordinate + 325) * sinf(math.degreestoradians(OrientationAngle));
-BulletSpeed.Y_coordinate = (Velocity.Y_coordinate + 325) * cosf(math.degreestoradians(OrientationAngle));
+BulletSpeed.X_coordinate += (Velocity.X_coordinate + 325) * sinf(math.degreestoradians(OrientationAngle));
+BulletSpeed.Y_coordinate += (Velocity.Y_coordinate + 325) * cosf(math.degreestoradians(OrientationAngle));
 
 shot->ChangePositions(PositionVector.X_coordinate,PositionVector.Y_coordinate);
 shot->ApplyImpulse(BulletSpeed);

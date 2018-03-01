@@ -1,13 +1,14 @@
 #include "Bullet.hpp"
 
-const float MaxDistance = 100.0f;
+const float MaxDistance = 80.0f;
 
 
 Bullet::Bullet()
 {
 	TravelledDistance = 0;
-	Radius = 4;
+	Radius = 3;
 	IsActive = true;
+	mass = 0.5;
 
 }
 
@@ -46,6 +47,7 @@ void::Bullet::Render(void)
 
 
 		CreateEntityBounds();
+		
 	}
 }
 

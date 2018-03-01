@@ -7,7 +7,6 @@
 #include <list>
 
 // Asteroids
-#include "SDLEvent.hpp"
 #include "TimeManager.hpp"
 #include "Player.h"
 #include "Asteroid.hpp"
@@ -47,6 +46,7 @@ namespace Engine
 		void CreateLineSegments				( );
 		void PlayerCrash					( );
 		void BulletCrash					( );
+		void AsteroidSplitting				( );
 	private:
 		/* =============================================================
 		 * PRIVATE FUNCTIONS
@@ -77,6 +77,7 @@ namespace Engine
 		std::vector<Asteroid*>				AsteroidVector;
 		std::vector<Entity*>				EntityVector;
 		std::vector<Bullet*>				BulletVector;
+		
 
 
 	};

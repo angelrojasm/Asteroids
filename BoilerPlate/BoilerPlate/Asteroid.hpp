@@ -22,6 +22,12 @@ public:
 	AsteroidSize::size getSize(void);
 	void ApplyImpulse(Vector2);
 
+	const float Asteroid_Moving_Speed = 60.0f;
+	const float Asteroid_Rotating_Speed = 40.0f;
+	const float Size_Inverse_Scale_Small = 0.3333f;
+	const float Size_Inverse_Scale_Medium = 0.5f;
+	const float Asteroid_Base_Size = 60.0f;
+
 private:
 	AsteroidSize::size Size;
 

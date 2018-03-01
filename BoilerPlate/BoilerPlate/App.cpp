@@ -9,6 +9,9 @@
 #include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
 
+
+bool test;
+
 namespace Engine
 {
 	const float DESIRED_FRAME_RATE = 60.0f;
@@ -33,6 +36,11 @@ namespace Engine
 	App::~App()
 	{
 		CleanupSDL();
+	}
+
+	void RenderText(std::string message, SDL_Color color, float x, float y, int size) {
+		//Create Font Class
+		//Create RenderingManager Class
 	}
 
 	void App::Asteroid_Creation(int Asteroid_Quantity) {
@@ -118,76 +126,79 @@ namespace Engine
 		}
 	}
 
-	/*void App::OnBulletCollision(void)
+	void App::AsteroidSplitting(void)
 	{
-		for (int i = 0; i < m_asteroids.size(); i++)
+	
+		for (int FirstCounter = 0; FirstCounter < AsteroidVector.size(); FirstCounter++)
 		{
-			for (int j = 0; j < m_bullets.size(); j++)
+			for (int SecondCounter = 0; SecondCounter < BulletVector.size(); SecondCounter++)
 			{
-				if (m_asteroids[i]->DetectCollision(*m_bullets[j]))
+				
+ 				if (AsteroidVector[FirstCounter]->DetectCollision(*BulletVector[SecondCounter]))
 				{
-					//When bullets collide with asteroids they should split them in smaller halves
-					if (m_asteroids[i]->GetSize() == Asteroid::Size::BIG)
+					test = AsteroidVector[FirstCounter]->DetectCollision(*BulletVector[SecondCounter]);
+					SDL_Log("Collision status: %i", test);
+					if (AsteroidVector[FirstCounter]->getSize() == Asteroid::AsteroidSize::BIG)
 					{
-						Vector2 originalPosition = m_asteroids[i]->GetPosition();
-						float originalOrientaion = m_asteroids[i]->GetOrientation();
+						Vector2 Position = AsteroidVector[FirstCounter]->getPositionVector();
+						float OrientationAngle = AsteroidVector[FirstCounter]->getOrientationAngle();
 
-						Asteroid* firstChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x,
-							originalPosition.y, originalOrientaion);
+						Asteroid* FirstSplit = new Asteroid(Asteroid::AsteroidSize::MEDIUM, Position.X_coordinate,
+							Position.Y_coordinate, OrientationAngle);
 
-						Asteroid* secondChild = new Asteroid(Asteroid::Size::MEDIUM, originalPosition.x,
-							originalPosition.y, originalOrientaion + ROTATING_SPEED);
+						Asteroid* SecondSplit = new Asteroid(Asteroid::AsteroidSize::MEDIUM, Position.X_coordinate,
+							Position.Y_coordinate, OrientationAngle + 30.0f);
 
-						m_asteroids.push_back(firstChild);
-						m_entities.push_back(firstChild);
+						AsteroidVector.push_back(FirstSplit);
+						EntityVector.push_back(FirstSplit);
 
-						m_asteroids.push_back(secondChild);
-						m_entities.push_back(secondChild);
+						AsteroidVector.push_back(SecondSplit);
+						EntityVector.push_back(SecondSplit);
 
-						m_bullets[j]->SetDisappearanceStatus(true);
-						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
-						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+						BulletVector[SecondCounter]->SetStatus(false);
+						BulletVector.erase(BulletVector.begin() + SecondCounter); 
+						AsteroidVector.erase(AsteroidVector.begin() + FirstCounter); 
 					}
 
-					else if (m_asteroids[i]->GetSize() == Asteroid::Size::MEDIUM)
+					else if (AsteroidVector[FirstCounter]->getSize() == Asteroid::AsteroidSize::MEDIUM)
 					{
-						Vector2 originalPosition = m_asteroids[i]->GetPosition();
-						float originalOrientaion = m_asteroids[i]->GetOrientation();
+						Vector2 Position = AsteroidVector[FirstCounter]->getPositionVector();
+						float OrientationAngle = AsteroidVector[FirstCounter]->getOrientationAngle();
 
-						Asteroid* firstChild = new Asteroid(Asteroid::Size::SMALL, originalPosition.x,
-							originalPosition.y, originalOrientaion);
+						Asteroid* FirstSplit = new Asteroid(Asteroid::AsteroidSize::SMALL, Position.X_coordinate,
+							Position.Y_coordinate, OrientationAngle);
 
-						Asteroid* secondChild = new Asteroid(Asteroid::Size::SMALL, originalPosition.x,
-							originalPosition.y, originalOrientaion + ROTATING_SPEED);
+						Asteroid* SecondSplit = new Asteroid(Asteroid::AsteroidSize::SMALL, Position.X_coordinate,
+							Position.Y_coordinate, OrientationAngle + 30.0f);
 
-						m_asteroids.push_back(firstChild);
-						m_entities.push_back(firstChild);
+						AsteroidVector.push_back(FirstSplit);
+						EntityVector.push_back(FirstSplit);
 
-						m_asteroids.push_back(secondChild);
-						m_entities.push_back(secondChild);
+						AsteroidVector.push_back(SecondSplit);
+						EntityVector.push_back(SecondSplit);
 
-						m_bullets[j]->SetDisappearanceStatus(true);
-						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
-						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+						BulletVector[SecondCounter]->SetStatus(false);
+						BulletVector.erase(BulletVector.begin() + SecondCounter); 
+						AsteroidVector.erase(AsteroidVector.begin() + FirstCounter);
 					}
 
-					else if (m_asteroids[i]->GetSize() == Asteroid::Size::SMALL)
+					else if (AsteroidVector[FirstCounter]->getSize() == Asteroid::AsteroidSize::SMALL)
 					{
-						m_bullets[j]->SetDisappearanceStatus(true);
-						m_bullets.erase(m_bullets.begin() + j); //Delete bullet
-						m_asteroids.erase(m_asteroids.begin() + i); //Delete parent Asteroid
+						BulletVector[SecondCounter]->SetStatus(false);
+						BulletVector.erase(BulletVector.begin() + SecondCounter); 
+						AsteroidVector.erase(AsteroidVector.begin() + FirstCounter);
 					}
 
-					break; //Stop evaluating after a collision is detected
+					break; 
 				}
 				else
 				{
-					if (m_bullets[j]->GetDisappearanceStatus())
-						m_bullets.erase(m_bullets.begin() + j); //Delete bullet that has disappeared and not collided
+					if (BulletVector[SecondCounter]->getStatus());
+						BulletVector.erase(BulletVector.begin() + SecondCounter);
 				}
 			}
 		}
-	}*/
+	}
 	void App::Execute()
 	{
 		if (m_state != GameState::INIT_SUCCESSFUL)
@@ -304,12 +315,17 @@ namespace Engine
 
 		// Update code goes here
 		//
-		//Ship->Update(DESIRED_FRAME_TIME);
-		for (int i = 0;i <= AsteroidVector.size();i++) {
+		
+		AsteroidSplitting();
+		PlayerCrash();
+
+
+
+		for (int i = 0; i < EntityVector.size();i++) {
 			EntityVector[i]->Update(DESIRED_FRAME_TIME);
 		}
 
-		PlayerCrash();
+
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
 
@@ -333,15 +349,13 @@ namespace Engine
 	
 		glClearColor(0,0,0,1);
 		glClear(GL_COLOR_BUFFER_BIT);
-		//Ship->Render();
+	
 		
-		for (int i = 0;i <= AsteroidVector.size();i++) {
+		for (int i = 0;i < EntityVector.size();i++) {
 			EntityVector[i]->Render();
 		}
 
-		for (int i = 0;i < BulletVector.size();i++) {
-			BulletVector[i]->Render();
-		}
+		
 
 		CreateLineSegments();
 		SDL_GL_SwapWindow(m_mainWindow);

@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "SDLEvent.hpp"
 #include "mathUtilities.h"
 
 Entity::Entity()
@@ -67,7 +68,7 @@ float Entity::EntityDistance(Entity SecondEntity)
 	float finalX = SecondEntity.PositionVector.X_coordinate - PositionVector.X_coordinate;
 	float finalY = SecondEntity.PositionVector.Y_coordinate - PositionVector.Y_coordinate;
 
-	distance = std::sqrt(finalX * finalX + finalY * finalY);
+	distance = std::abs(sqrt(finalX * finalX + finalY * finalY));
 
 	return distance;
 }
@@ -77,16 +78,15 @@ bool Entity::DetectCollision(Entity SecondEntity)
 	float RadiusSum = Radius + SecondEntity.Radius;
 
 	float entityDistance = EntityDistance(SecondEntity);
-
 	bool DetectedCollision = entityDistance <= RadiusSum;
-
+	
 	if (DetectedCollision && !Debugging)
 	{
 		Collision = true;
 	}
-
 	return DetectedCollision;
 }
+
 
 float::Entity::warp(float AxisPosition, int MinBorder, int MaxBorder) {
 	if (AxisPosition < MinBorder) {
