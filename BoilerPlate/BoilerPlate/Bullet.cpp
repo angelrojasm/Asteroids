@@ -1,6 +1,6 @@
 #include "Bullet.hpp"
 
-const float MaxDistance = 80.0f;
+const float MaxDistance = 75.0f;
 
 
 Bullet::Bullet()
@@ -8,7 +8,7 @@ Bullet::Bullet()
 	TravelledDistance = 0;
 	Radius = 3;
 	IsActive = true;
-	mass = 0.5;
+	mass = 0.5f;
 
 }
 
@@ -40,7 +40,7 @@ void::Bullet::Render(void)
 	if (IsActive)
 	{
 		glLoadIdentity();
-		glPointSize(3.0f);
+		glPointSize(5.0f);
 		glBegin(GL_POINTS);
 		glVertex2f(PositionVector.X_coordinate, PositionVector.Y_coordinate);
 		glEnd();

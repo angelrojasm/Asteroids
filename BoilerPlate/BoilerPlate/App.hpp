@@ -10,6 +10,7 @@
 #include "TimeManager.hpp"
 #include "Player.h"
 #include "Asteroid.hpp"
+#include "InputManager.h"
 
 namespace Engine
 {
@@ -47,6 +48,9 @@ namespace Engine
 		void PlayerCrash					( );
 		void BulletCrash					( );
 		void AsteroidSplitting				( );
+		void UpdateFrames					( );
+		void ShowFrames						( );
+
 	private:
 		/* =============================================================
 		 * PRIVATE FUNCTIONS
@@ -59,6 +63,7 @@ namespace Engine
 		void OnExit							( ) override;
 		void OnKeyDown						( SDL_KeyboardEvent keyBoardEvent ) override;
 		void OnKeyUp						( SDL_KeyboardEvent keyBoardEvent ) override;
+		void VerifyKeyInputs				( );
 
 
 		/* =============================================================
@@ -77,6 +82,13 @@ namespace Engine
 		std::vector<Asteroid*>				AsteroidVector;
 		std::vector<Entity*>				EntityVector;
 		std::vector<Bullet*>				BulletVector;
+		std::vector<Vector2>				Frames;
+		int									FramePosition;
+		bool								PlotIsVisible;
+		InputManager						GameController;
+		float								AsteroidKeyRegulator;
+		float								BulletKeyRegulator;
+
 		
 
 

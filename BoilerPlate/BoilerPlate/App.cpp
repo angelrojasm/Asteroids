@@ -14,8 +14,14 @@ bool test;
 
 namespace Engine
 {
+	const float XPosition = 400.0f;
+	const float YPosition = -300.0f;
+	const int MaxFrames = 10;
+	const float XScale = 10.0f;
+	const float YScale = 100000.0f;
 	const float DESIRED_FRAME_RATE = 60.0f;
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
+	float deltaTime;
 
 	App::App(const std::string& title, const int width, const int height)
 		: m_title(title)
@@ -30,7 +36,17 @@ namespace Engine
 		Ship = new Player();
 		EntityVector.push_back(Ship);
 		Asteroid_Creation(5);
-		
+		PlotIsVisible = false;
+		deltaTime = DESIRED_FRAME_TIME;
+		FramePosition = 0;
+		AsteroidKeyRegulator = 60;
+		BulletKeyRegulator = 15;
+		Frames = std::vector<Vector2>(MaxFrames);
+
+		for (int i = 0; i < Frames.size(); i++)
+		{
+			Frames[i] = Vector2(i, DESIRED_FRAME_TIME);
+		}
 	}
 
 	App::~App()
@@ -58,9 +74,8 @@ namespace Engine
 				Asteroid_Y_Position *= -1;
 			}
 			float Asteroid_Orientation_Angle = rand() % 361;
-			int Asteroid_Size = rand() % 3;
 
-			Asteroid* newAsteroid = new Asteroid((Asteroid::AsteroidSize::size)Asteroid_Size, Asteroid_Orientation_Angle, Asteroid_X_Position, Asteroid_Y_Position);
+			Asteroid* newAsteroid = new Asteroid(Asteroid::AsteroidSize::size::BIG, Asteroid_Orientation_Angle, Asteroid_X_Position, Asteroid_Y_Position);
 
 			AsteroidVector.push_back(newAsteroid);
 			EntityVector.push_back(newAsteroid);
@@ -128,26 +143,25 @@ namespace Engine
 
 	void App::AsteroidSplitting(void)
 	{
-	
+		
 		for (int FirstCounter = 0; FirstCounter < AsteroidVector.size(); FirstCounter++)
 		{
 			for (int SecondCounter = 0; SecondCounter < BulletVector.size(); SecondCounter++)
 			{
-				
- 				if (AsteroidVector[FirstCounter]->DetectCollision(*BulletVector[SecondCounter]))
+				bool ok = AsteroidVector[FirstCounter]->DetectCollision(*BulletVector[SecondCounter]);
+ 				if (ok)
 				{
 					test = AsteroidVector[FirstCounter]->DetectCollision(*BulletVector[SecondCounter]);
-					SDL_Log("Collision status: %i", test);
 					if (AsteroidVector[FirstCounter]->getSize() == Asteroid::AsteroidSize::BIG)
 					{
 						Vector2 Position = AsteroidVector[FirstCounter]->getPositionVector();
 						float OrientationAngle = AsteroidVector[FirstCounter]->getOrientationAngle();
 
-						Asteroid* FirstSplit = new Asteroid(Asteroid::AsteroidSize::MEDIUM, Position.X_coordinate,
-							Position.Y_coordinate, OrientationAngle);
+						Asteroid* FirstSplit = new Asteroid(Asteroid::AsteroidSize::MEDIUM, OrientationAngle,
+							Position.X_coordinate, Position.Y_coordinate);
 
-						Asteroid* SecondSplit = new Asteroid(Asteroid::AsteroidSize::MEDIUM, Position.X_coordinate,
-							Position.Y_coordinate, OrientationAngle + 30.0f);
+						Asteroid* SecondSplit = new Asteroid(Asteroid::AsteroidSize::MEDIUM, OrientationAngle + 30.0f,
+							Position.X_coordinate,Position.Y_coordinate);
 
 						AsteroidVector.push_back(FirstSplit);
 						EntityVector.push_back(FirstSplit);
@@ -165,11 +179,11 @@ namespace Engine
 						Vector2 Position = AsteroidVector[FirstCounter]->getPositionVector();
 						float OrientationAngle = AsteroidVector[FirstCounter]->getOrientationAngle();
 
-						Asteroid* FirstSplit = new Asteroid(Asteroid::AsteroidSize::SMALL, Position.X_coordinate,
-							Position.Y_coordinate, OrientationAngle);
+						Asteroid* FirstSplit = new Asteroid(Asteroid::AsteroidSize::SMALL, OrientationAngle,
+							Position.X_coordinate, Position.Y_coordinate);
 
-						Asteroid* SecondSplit = new Asteroid(Asteroid::AsteroidSize::SMALL, Position.X_coordinate,
-							Position.Y_coordinate, OrientationAngle + 30.0f);
+						Asteroid* SecondSplit = new Asteroid(Asteroid::AsteroidSize::SMALL, OrientationAngle + 30.0f,
+							Position.X_coordinate, Position.Y_coordinate);
 
 						AsteroidVector.push_back(FirstSplit);
 						EntityVector.push_back(FirstSplit);
@@ -193,12 +207,101 @@ namespace Engine
 				}
 				else
 				{
-					if (BulletVector[SecondCounter]->getStatus());
+					if (!BulletVector[SecondCounter]->getStatus())
 						BulletVector.erase(BulletVector.begin() + SecondCounter);
 				}
 			}
 		}
 	}
+
+	void App::VerifyKeyInputs() {
+		if (!GameController.getkey_Up_was_pressed()) {
+			Ship->setIsThrusting(false);
+		}
+		if (!GameController.getkey_F_was_pressed()) {
+			PlotIsVisible = false;
+		}
+
+		if (!GameController.getkey_D_was_pressed()) {
+			for (int i = 0;i < EntityVector.size();i++) {
+				EntityVector[i]->setDebugging(false);
+			}
+		}
+
+		if (GameController.getkey_Up_was_pressed()) {
+
+			Ship->MoveForward();
+			Ship->setIsThrusting(true);
+		}
+
+
+		if (GameController.getkey_Left_was_pressed()) {
+
+			Ship->RotateLeft();
+		}
+
+		if (GameController.getkey_Right_was_pressed()) {
+			Ship->RotateRight();
+		}
+
+		if (GameController.getkey_P_was_pressed() && AsteroidKeyRegulator == 0) {
+			AsteroidKeyRegulator = 60;
+			Asteroid_Creation(1);
+		}
+
+		if (GameController.getkey_O_was_pressed() && AsteroidKeyRegulator == 0) {
+			AsteroidKeyRegulator = 60;
+			Asteroid_Deletion(1);
+		}
+
+		if (GameController.getkey_D_was_pressed()) {
+			for (int i = 0;i < EntityVector.size();i++) {
+				EntityVector[i]->setDebugging(true);
+			}
+		}
+
+		if (GameController.getkey_F_was_pressed()) {
+			PlotIsVisible = true;
+		}
+
+		if (GameController.getkey_Space_was_pressed() && BulletKeyRegulator == 0) {
+			BulletKeyRegulator = 15;
+			Bullet* currentBullet = Ship->Shoot();
+			BulletVector.push_back(currentBullet);
+			EntityVector.push_back(currentBullet);
+		}
+
+	}
+	void App::UpdateFrames(void)
+	{
+		Frames[FramePosition] = Vector2((float)FramePosition, deltaTime);
+		FramePosition++;
+
+		if (FramePosition >= MaxFrames)
+			FramePosition = 0;
+	}
+
+	void App::ShowFrames(void)
+	{
+		glColor4f(1.0f,1.0f, 1.0f, 1.0f);
+		glLoadIdentity();
+		//Locate in window
+		glTranslatef(XPosition, YPosition, 0.0f);
+		glBegin(GL_LINE_STRIP);
+		glVertex2f(0.0f, 100.0f); 
+		glVertex2f(0.0f, 0.0f); 
+		glVertex2f(130.0f, 0.0f); 
+		glEnd();
+
+		glBegin(GL_LINE_STRIP);
+		
+		for (int i = 0; i <MaxFrames; i++)
+		{
+			glVertex2f(XScale * Frames[i].X_coordinate, YScale * (DESIRED_FRAME_TIME -Frames[i].Y_coordinate));
+		}
+		glEnd();
+	}
+
 	void App::Execute()
 	{
 		if (m_state != GameState::INIT_SUCCESSFUL)
@@ -252,32 +355,30 @@ namespace Engine
 		switch (keyBoardEvent.keysym.scancode) {
 
 		case SDL_SCANCODE_UP:
-			Ship->MoveForward();
-			Ship->setIsThrusting(true);
+			GameController.setkey_Up_was_pressed(true);
 			break;
 
 		case SDL_SCANCODE_LEFT:
-			Ship->RotateLeft();
+			GameController.setkey_Left_was_pressed(true);
 			break;
 
 		case SDL_SCANCODE_RIGHT:
-
-			Ship->RotateRight();
+			GameController.setkey_Right_was_pressed(true);
 			break;
 		case SDL_SCANCODE_P:
-			Asteroid_Creation(1);
+			GameController.setkey_P_was_pressed(true);
 			break;
 		case SDL_SCANCODE_O:
-			Asteroid_Deletion(1);
+			GameController.setkey_O_was_pressed(true);
 			break;
 		case SDL_SCANCODE_D:
-			for (int i = 0;i < EntityVector.size();i++) {
-				EntityVector[i]->setDebugging(true);
-			}
+			GameController.setkey_D_was_pressed(true);
+			break;
+		case SDL_SCANCODE_F:
+			GameController.setkey_F_was_pressed(true);
 			break;
 		case SDL_SCANCODE_SPACE: {
-			Bullet* currentBullet = Ship->Shoot();
-			BulletVector.push_back(currentBullet);
+			GameController.setkey_Space_was_pressed(true);
 			break;
 		}
 		default:
@@ -291,14 +392,33 @@ namespace Engine
 		Ship->setIsThrusting(false);
 		switch (keyBoardEvent.keysym.scancode)
 		{
-		case SDL_SCANCODE_ESCAPE:
-			OnExit();
+		case SDL_SCANCODE_UP:
+			GameController.setkey_Up_was_pressed(false);
+			break;
+
+		case SDL_SCANCODE_LEFT:
+			GameController.setkey_Left_was_pressed(false);
+			break;
+
+		case SDL_SCANCODE_RIGHT:
+			GameController.setkey_Right_was_pressed(false);
+			break;
+		case SDL_SCANCODE_P:
+			GameController.setkey_P_was_pressed(false);
+			break;
+		case SDL_SCANCODE_O:
+			GameController.setkey_O_was_pressed(false);
 			break;
 		case SDL_SCANCODE_D:
-			for (int i = 0;i < EntityVector.size();i++) {
-				EntityVector[i]->setDebugging(false);
-			}
-
+			GameController.setkey_D_was_pressed(false);
+			break;
+		case SDL_SCANCODE_F:
+			GameController.setkey_F_was_pressed(false);
+			break;
+		case SDL_SCANCODE_SPACE: {
+			GameController.setkey_Space_was_pressed(false);
+			break;
+		}
 		default:
 			//DO NOTHING
 			break;
@@ -307,8 +427,13 @@ namespace Engine
 
 	void App::Update()
 	{
-	
-		
+		VerifyKeyInputs();
+		if (AsteroidKeyRegulator >= 1) {
+			AsteroidKeyRegulator--;
+		}
+		if (BulletKeyRegulator >= 1) {
+			BulletKeyRegulator--;
+		}
 
 		double startTime = m_timer->GetElapsedTimeInSeconds();
 
@@ -324,12 +449,12 @@ namespace Engine
 			EntityVector[i]->Update(DESIRED_FRAME_TIME);
 		}
 
-		for (int i = 0; i < BulletVector.size();i++) {
-			BulletVector[i]->Update(DESIRED_FRAME_TIME);
-		}
 
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
+
+		deltaTime = DESIRED_FRAME_TIME - (endTime - startTime);
+		UpdateFrames();
 
 		while (endTime < nextTimeFrame)
 		{
@@ -357,11 +482,10 @@ namespace Engine
 			EntityVector[i]->Render();
 		}
 
-		for (int i = 0;i <BulletVector.size();i++) {
-			BulletVector[i]->Render();
-		}
-
 		CreateLineSegments();
+
+		if (PlotIsVisible)
+			ShowFrames();
 		SDL_GL_SwapWindow(m_mainWindow);
 	}
 

@@ -176,6 +176,7 @@ copy /Y "$(SolutionDir)\Externals\SDL2-2.0.4\lib\x64\SDL2.dll" "$(TargetDir)SDL2
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mathUtilities.cpp" />
     <ClCompile Include="Paint.cpp" />
@@ -193,6 +194,7 @@ copy /Y "$(SolutionDir)\Externals\SDL2-2.0.4\lib\x64\SDL2.dll" "$(TargetDir)SDL2
     <ClInclude Include="Bullet.hpp" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="mathUtilities.h" />
     <ClInclude Include="Paint.h" />
     <ClInclude Include="Player.h" />

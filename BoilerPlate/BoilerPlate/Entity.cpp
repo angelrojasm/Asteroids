@@ -84,7 +84,8 @@ bool Entity::DetectCollision(Entity SecondEntity)
 	{
 		Collision = true;
 	}
-	return DetectedCollision;
+
+	return Collision;
 }
 
 
