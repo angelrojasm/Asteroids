@@ -278,7 +278,6 @@ namespace Engine
 		case SDL_SCANCODE_SPACE: {
 			Bullet* currentBullet = Ship->Shoot();
 			BulletVector.push_back(currentBullet);
-			EntityVector.push_back(currentBullet);
 			break;
 		}
 		default:
@@ -325,6 +324,9 @@ namespace Engine
 			EntityVector[i]->Update(DESIRED_FRAME_TIME);
 		}
 
+		for (int i = 0; i < BulletVector.size();i++) {
+			BulletVector[i]->Update(DESIRED_FRAME_TIME);
+		}
 
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
@@ -355,7 +357,9 @@ namespace Engine
 			EntityVector[i]->Render();
 		}
 
-		
+		for (int i = 0;i <BulletVector.size();i++) {
+			BulletVector[i]->Render();
+		}
 
 		CreateLineSegments();
 		SDL_GL_SwapWindow(m_mainWindow);
