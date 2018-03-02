@@ -6,13 +6,16 @@
 class Player: public Entity
 {
 
+private:
+	std::vector<Vector2> ThrusterContainer;
+	bool IsThrusting;
+	int PlayerLives;
+	bool CanBeDestroyed;
+	bool GameOver;
 
 
 public:
 
-	std::vector<Vector2> ThrusterContainer;
-	float Friction;
-	bool IsThrusting;
 	Player();
 	~Player();
 
@@ -25,7 +28,14 @@ public:
 	bool getIsThrusting(void);
 	void setIsThrusting(bool);
 	Bullet* Shoot(void);
-
+	int getPlayerLives(void);
+	void LoseLives(int);
+	void AddLives(int);
+	void setRespawning(bool);
+	bool getRespawningStatus(void);
+	void setGameOver(bool);
+	bool getGameOverStatus(void);
+	void MoveTo(Vector2);
 
 };
 

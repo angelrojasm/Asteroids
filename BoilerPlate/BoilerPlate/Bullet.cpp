@@ -1,6 +1,6 @@
 #include "Bullet.hpp"
 
-const float MaxDistance = 75.0f;
+const float MaxDistance = 45.0f;
 
 
 Bullet::Bullet()

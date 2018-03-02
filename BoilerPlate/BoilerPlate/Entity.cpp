@@ -7,7 +7,6 @@ Entity::Entity()
 	PositionVector = Vector2();
 	mass = 0.5;
 	OrientationAngle = 0;
-	Acceleration = 0.166f;
 	Velocity = 0;
 	Debugging = false;
 	Collision = false;
@@ -32,6 +31,11 @@ bool::Entity::HasCollided() {
 	return Collision;
 }
 
+void::Entity::setCollision(bool newValue) {
+	Collision = newValue;
+}
+
+
 void::Entity::setOrientationAngle(float NewAngle) {
 	OrientationAngle = NewAngle;
 }
@@ -49,6 +53,7 @@ void::Entity::AccumulateVelocity(float AdditionValue) {
 	Velocity.X_coordinate += AdditionValue;
 	Velocity.Y_coordinate += AdditionValue;
 }
+
 
 Vector2 Entity::getVelocity() {
 	return Velocity;

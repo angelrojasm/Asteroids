@@ -1,8 +1,9 @@
 #pragma once
+#include <GL/glew.h>
+#include <SDL_opengl.h>
 #include "Vector2.h"
 #include <vector>
-#include <GL/glew.h>
-#include <SDL2/SDL_opengl.h>
+
 class Entity
 {
 protected:
@@ -45,6 +46,7 @@ public:
 	bool HasCollided(void);
 	bool DetectCollision(Entity);
 	void ChangePositions(float, float);
+	void setCollision(bool);
 
 	Entity();
 	~Entity();

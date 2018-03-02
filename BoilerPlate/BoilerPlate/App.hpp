@@ -11,6 +11,8 @@
 #include "Player.h"
 #include "Asteroid.hpp"
 #include "InputManager.h"
+#include "TextRenderer.h"
+
 
 namespace Engine
 {
@@ -50,6 +52,11 @@ namespace Engine
 		void AsteroidSplitting				( );
 		void UpdateFrames					( );
 		void ShowFrames						( );
+		void InitiateRespawnProcess			( );
+		void CountSeconds					(int);
+		void VerifyKeyInputs				( );
+		void RestartGame					( );
+		void RenderMessages					( );
 
 	private:
 		/* =============================================================
@@ -63,7 +70,6 @@ namespace Engine
 		void OnExit							( ) override;
 		void OnKeyDown						( SDL_KeyboardEvent keyBoardEvent ) override;
 		void OnKeyUp						( SDL_KeyboardEvent keyBoardEvent ) override;
-		void VerifyKeyInputs				( );
 
 
 		/* =============================================================
@@ -88,6 +94,12 @@ namespace Engine
 		InputManager						GameController;
 		float								AsteroidKeyRegulator;
 		float								BulletKeyRegulator;
+		float								deltaTime;
+		int									CountTimer;
+		int									LevelCount;
+		int									GameScore;
+		int									ScoreRequirement;
+	
 
 		
 

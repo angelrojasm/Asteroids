@@ -11,6 +11,7 @@ InputManager::InputManager()
 	key_O_was_pressed = false;
 	key_D_was_pressed = false;
 	key_F_was_pressed = false;
+	key_R_was_pressed = false;
 	key_Space_was_pressed = false;
 	
 
@@ -54,6 +55,10 @@ void::InputManager::setkey_Space_was_pressed(bool newValue) {
 	key_Space_was_pressed = newValue;
 }
 
+void::InputManager::setkey_R_was_pressed(bool newValue) {
+	key_R_was_pressed = newValue;
+}
+
 bool::InputManager::getkey_Up_was_pressed() {
 	return key_Up_was_pressed;
 }
@@ -84,4 +89,8 @@ bool::InputManager::getkey_P_was_pressed() {
 
 bool::InputManager::getkey_Space_was_pressed() {
 	return key_Space_was_pressed;
+}
+
+bool::InputManager::getkey_R_was_pressed() {
+	return key_R_was_pressed;
 }

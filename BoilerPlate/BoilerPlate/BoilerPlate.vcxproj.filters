@@ -17,6 +17,7 @@
     <ClCompile Include="Asteroid.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
@@ -33,6 +34,7 @@
     <ClInclude Include="Asteroid.hpp" />
     <ClInclude Include="Bullet.hpp" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="TextRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -44,5 +46,8 @@
     <Filter Include="Engine\Header files">
       <UniqueIdentifier>{da8cc683-e66e-46b9-be58-7d0e16e23f76}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="fonts\Hyperspace.ttf" />
   </ItemGroup>
 </Project>

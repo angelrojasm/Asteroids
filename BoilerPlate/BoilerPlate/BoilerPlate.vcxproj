@@ -95,7 +95,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\Externals\SDL2-2.0.4\lib\x86;..\Externals\glew-1.13.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32.lib;opengl32.lib;SDL2main.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;opengl32.lib;irrKlang.lib;SDL2main.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)\Externals\glew-1.13.0\bin\Release\Win32\glew32.dll" "$(TargetDir)glew32.dll"
@@ -108,18 +108,24 @@ copy /Y "$(SolutionDir)\Externals\SDL2-2.0.4\lib\x86\SDL2.dll" "$(TargetDir)SDL2
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Externals\SDL2-2.0.4\include;..\Externals\glew-1.13.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Externals\SDL2-2.0.4\include\SDL2;..\Externals\glew-1.13.0\include;..\Externals\irrKlang-64bit-1.6.0\include;..\Externals\SDL2_ttf-2.0.14\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\Externals\SDL2-2.0.4\lib\x64;..\Externals\glew-1.13.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32.lib;opengl32.lib;SDL2main.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Externals\glew-1.13.0\lib\Release\x64;..\Externals\irrKlang-64bit-1.6.0\lib\Winx64-visualStudio;..\Externals\SDL2-2.0.4\lib\x64;..\Externals\SDL2_ttf-2.0.14\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;opengl32.lib;irrKlang.lib;SDL2main.lib;SDL2.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)\Externals\glew-1.13.0\bin\Release\x64\glew32.dll" "$(TargetDir)glew32.dll"
-copy /Y "$(SolutionDir)\Externals\SDL2-2.0.4\lib\x64\SDL2.dll" "$(TargetDir)SDL2.dll"</Command>
+copy /Y "$(SolutionDir)\Externals\SDL2-2.0.4\lib\x64\SDL2.dll" "$(TargetDir)SDL2.dll"
+copy /Y "$(SolutionDir)\Externals\irrKlang-64bit-1.6.0\bin\winx64-visualStudio\ikpFlac.dll" "$(TargetDir)ikpFlac.dll"
+copy /Y "$(SolutionDir)\Externals\irrKlang-64bit-1.6.0\bin\winx64-visualStudio\ikpMP3.dll" "$(TargetDir)ikpMP3.dll"
+copy /Y "$(SolutionDir)\Externals\irrKlang-64bit-1.6.0\bin\winx64-visualStudio\irrKlang.dll" "$(TargetDir)irrKlang.dll"
+copy /Y "$(SolutionDir)\Externals\SDL2_ttf-2.0.14\lib\x64\SDL2_ttf.dll" "$(TargetDir)SDL2_ttf.dll"
+copy /Y "$(SolutionDir)\Externals\SDL2_ttf-2.0.14\lib\x64\libfreetype-6.dll" "$(TargetDir)libfreetype-6.dll"
+copy /Y "$(SolutionDir)\Externals\SDL2_ttf-2.0.14\lib\x64\zlib1.dll" "$(TargetDir)zlib1.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -183,6 +189,7 @@ copy /Y "$(SolutionDir)\Externals\SDL2-2.0.4\lib\x64\SDL2.dll" "$(TargetDir)SDL2
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SDLEvent.cpp" />
     <ClCompile Include="stb_image.c" />
+    <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Vector3.cpp" />
@@ -199,10 +206,14 @@ copy /Y "$(SolutionDir)\Externals\SDL2-2.0.4\lib\x64\SDL2.dll" "$(TargetDir)SDL2
     <ClInclude Include="Paint.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SDLEvent.hpp" />
+    <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="TimeManager.hpp" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vector4.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="fonts\Hyperspace.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

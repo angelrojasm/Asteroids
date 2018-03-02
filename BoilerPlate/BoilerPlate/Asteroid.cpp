@@ -117,7 +117,7 @@ Asteroid::AsteroidSize::size Asteroid::getSize() {
 void::Asteroid::ApplyImpulse(Vector2 Impulse) {
 	mathUtilities math;
 
-	int ExtraImpulse = (Asteroid_Moving_Speed / ((int)Size + 1)) * 2;
+	float ExtraImpulse = (Asteroid_Moving_Speed / (((int)Size + 1)) * 2);
 
 	Velocity.X_coordinate -= (Impulse.X_coordinate / mass) * sinf(math.degreestoradians(OrientationAngle)) + ExtraImpulse;
 	Velocity.Y_coordinate += (Impulse.Y_coordinate / mass) * cosf(math.degreestoradians(OrientationAngle)) + ExtraImpulse;

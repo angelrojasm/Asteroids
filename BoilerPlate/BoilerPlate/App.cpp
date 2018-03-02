@@ -4,13 +4,17 @@
 #include "Paint.h"
 #include "Player.h"
 #include <ctime>
+#include <irrKlang.h>
+
 
 // OpenGL includes
 #include <GL/glew.h>
-#include <SDL2/SDL_opengl.h>
+#include <SDL_opengl.h>
 
 
-bool test;
+irrklang::ISoundEngine *SoundEngine = irrklang::createIrrKlangDevice();
+
+
 
 namespace Engine
 {
@@ -21,7 +25,14 @@ namespace Engine
 	const float YScale = 100000.0f;
 	const float DESIRED_FRAME_RATE = 60.0f;
 	const float DESIRED_FRAME_TIME = 1.0f / DESIRED_FRAME_RATE;
-	float deltaTime;
+	const int BIG_ASTEROID_SCORE = 10;
+	const int MEDIUM_ASTEROID_SCORE = 25;
+	const int SMALL_ASTEROID_SCORE = 50;
+	const int minWidthBorder = -568;
+	const int maxWidthBorder = 568;
+	const int minHeightBorder = -320;
+	const int maxHeightBorder = 320;
+
 
 	App::App(const std::string& title, const int width, const int height)
 		: m_title(title)
@@ -35,17 +46,22 @@ namespace Engine
 		m_lastFrameTime = m_timer->GetElapsedTimeInSeconds();
 		Ship = new Player();
 		EntityVector.push_back(Ship);
-		Asteroid_Creation(5);
+		Asteroid_Creation(1);
 		PlotIsVisible = false;
 		deltaTime = DESIRED_FRAME_TIME;
 		FramePosition = 0;
 		AsteroidKeyRegulator = 60;
 		BulletKeyRegulator = 15;
 		Frames = std::vector<Vector2>(MaxFrames);
-
+		CountTimer = -1;
+		LevelCount = 1;
+		GameScore = 0;
+		ScoreRequirement = 1000;
+	
+		
 		for (int i = 0; i < Frames.size(); i++)
 		{
-			Frames[i] = Vector2(i, DESIRED_FRAME_TIME);
+			Frames[i] = Vector2((float)i, DESIRED_FRAME_TIME);
 		}
 	}
 
@@ -54,26 +70,21 @@ namespace Engine
 		CleanupSDL();
 	}
 
-	void RenderText(std::string message, SDL_Color color, float x, float y, int size) {
-		//Create Font Class
-		//Create RenderingManager Class
-	}
-
 	void App::Asteroid_Creation(int Asteroid_Quantity) {
-		srand(time(NULL));
+		srand((unsigned int)time(NULL));
 
 		for (int i = 0; i < Asteroid_Quantity; i++) {
-			float Asteroid_X_Position = rand() % 1136;
+			float Asteroid_X_Position = (float)(rand() % 1136);
 			if (Asteroid_X_Position > 568) {
 				Asteroid_X_Position -= 568;
 				Asteroid_X_Position *= -1;
 			}
-			float Asteroid_Y_Position = rand() % 640;
+			float Asteroid_Y_Position = (float)(rand() % 640);
 			if (Asteroid_Y_Position > 320) {
 				Asteroid_Y_Position -= 320;
 				Asteroid_Y_Position *= -1;
 			}
-			float Asteroid_Orientation_Angle = rand() % 361;
+			float Asteroid_Orientation_Angle = (float)(rand() % 361);
 
 			Asteroid* newAsteroid = new Asteroid(Asteroid::AsteroidSize::size::BIG, Asteroid_Orientation_Angle, Asteroid_X_Position, Asteroid_Y_Position);
 
@@ -132,26 +143,50 @@ namespace Engine
 
 	void App::PlayerCrash()
 	{
-		for (int i = 0; i < AsteroidVector.size(); i++)
-		{
-			if (!Ship->HasCollided() && !(*AsteroidVector[i]).HasCollided())
+		if (!Ship->getGameOverStatus()) {
+			for (int i = 0; i < AsteroidVector.size(); i++)
 			{
-				Ship->DetectCollision(*AsteroidVector[i]);
+				Ship->setCollision(false);
+				if (!Ship->HasCollided() && !(*AsteroidVector[i]).HasCollided())
+				{
+					;
+					if (Ship->DetectCollision(*AsteroidVector[i]) && Ship->getRespawningStatus()) {
+
+						Ship->MoveTo(Vector2(0, 0));
+						Ship->setVelocity(Vector2(0, 0));
+						Ship->setOrientationAngle(0);
+						Ship->LoseLives(1);
+						Ship->setCollision(false);
+						AsteroidVector[i]->setCollision(false);
+						InitiateRespawnProcess();
+						SoundEngine->play2D("sounds/pacdies.wav");
+
+					}
+				}
 			}
 		}
 	}
 
+	void App::CountSeconds(int amount) {
+		if (CountTimer == -1) {
+			CountTimer = amount * 60;
+		}
+	}
+
+	void App::InitiateRespawnProcess() {
+		Ship->setRespawning(false);
+		CountSeconds(3);
+	}
+
 	void App::AsteroidSplitting(void)
 	{
-		
+
 		for (int FirstCounter = 0; FirstCounter < AsteroidVector.size(); FirstCounter++)
 		{
 			for (int SecondCounter = 0; SecondCounter < BulletVector.size(); SecondCounter++)
 			{
-				bool ok = AsteroidVector[FirstCounter]->DetectCollision(*BulletVector[SecondCounter]);
- 				if (ok)
-				{
-					test = AsteroidVector[FirstCounter]->DetectCollision(*BulletVector[SecondCounter]);
+				if (AsteroidVector[FirstCounter]->DetectCollision(*BulletVector[SecondCounter])) {
+
 					if (AsteroidVector[FirstCounter]->getSize() == Asteroid::AsteroidSize::BIG)
 					{
 						Vector2 Position = AsteroidVector[FirstCounter]->getPositionVector();
@@ -161,7 +196,7 @@ namespace Engine
 							Position.X_coordinate, Position.Y_coordinate);
 
 						Asteroid* SecondSplit = new Asteroid(Asteroid::AsteroidSize::MEDIUM, OrientationAngle + 30.0f,
-							Position.X_coordinate,Position.Y_coordinate);
+							Position.X_coordinate, Position.Y_coordinate);
 
 						AsteroidVector.push_back(FirstSplit);
 						EntityVector.push_back(FirstSplit);
@@ -170,8 +205,10 @@ namespace Engine
 						EntityVector.push_back(SecondSplit);
 
 						BulletVector[SecondCounter]->SetStatus(false);
-						BulletVector.erase(BulletVector.begin() + SecondCounter); 
-						AsteroidVector.erase(AsteroidVector.begin() + FirstCounter); 
+						BulletVector.erase(BulletVector.begin() + SecondCounter);
+						AsteroidVector.erase(AsteroidVector.begin() + FirstCounter);
+						SoundEngine->play2D("sounds/bangLarge.wav");
+						GameScore += BIG_ASTEROID_SCORE;
 					}
 
 					else if (AsteroidVector[FirstCounter]->getSize() == Asteroid::AsteroidSize::MEDIUM)
@@ -192,18 +229,22 @@ namespace Engine
 						EntityVector.push_back(SecondSplit);
 
 						BulletVector[SecondCounter]->SetStatus(false);
-						BulletVector.erase(BulletVector.begin() + SecondCounter); 
+						BulletVector.erase(BulletVector.begin() + SecondCounter);
 						AsteroidVector.erase(AsteroidVector.begin() + FirstCounter);
+						SoundEngine->play2D("sounds/bangMedium.wav");
+						GameScore += MEDIUM_ASTEROID_SCORE;
 					}
 
 					else if (AsteroidVector[FirstCounter]->getSize() == Asteroid::AsteroidSize::SMALL)
 					{
 						BulletVector[SecondCounter]->SetStatus(false);
-						BulletVector.erase(BulletVector.begin() + SecondCounter); 
+						BulletVector.erase(BulletVector.begin() + SecondCounter);
 						AsteroidVector.erase(AsteroidVector.begin() + FirstCounter);
+						SoundEngine->play2D("sounds/bangSmall.wav");
+						GameScore += SMALL_ASTEROID_SCORE;
 					}
 
-					break; 
+					break;
 				}
 				else
 				{
@@ -212,6 +253,20 @@ namespace Engine
 				}
 			}
 		}
+	}
+
+
+
+
+	void App::RestartGame() {
+		Ship = new Player();
+		AsteroidVector.clear();
+		EntityVector.clear();
+		LevelCount = 1;
+		GameScore = 0;
+		ScoreRequirement = 1000;
+		EntityVector.push_back(Ship);
+		Asteroid_Creation(1);
 	}
 
 	void App::VerifyKeyInputs() {
@@ -228,50 +283,60 @@ namespace Engine
 			}
 		}
 
-		if (GameController.getkey_Up_was_pressed()) {
+		if (GameController.getkey_Up_was_pressed() && !Ship->getGameOverStatus() && Ship->getRespawningStatus()) {
 
-			Ship->MoveForward();
+			
 			Ship->setIsThrusting(true);
+			Ship->MoveForward();
+			SoundEngine->play2D("sounds/thrust.wav");
+
 		}
 
 
-		if (GameController.getkey_Left_was_pressed()) {
+		if (GameController.getkey_Left_was_pressed() && !Ship->getGameOverStatus() && Ship->getRespawningStatus()) {
 
 			Ship->RotateLeft();
 		}
 
-		if (GameController.getkey_Right_was_pressed()) {
+		if (GameController.getkey_Right_was_pressed() && !Ship->getGameOverStatus() && Ship->getRespawningStatus()) {
 			Ship->RotateRight();
 		}
 
-		if (GameController.getkey_P_was_pressed() && AsteroidKeyRegulator == 0) {
+		if (GameController.getkey_P_was_pressed() && AsteroidKeyRegulator == 0 && !Ship->getGameOverStatus()) {
 			AsteroidKeyRegulator = 60;
 			Asteroid_Creation(1);
 		}
 
-		if (GameController.getkey_O_was_pressed() && AsteroidKeyRegulator == 0) {
+		if (GameController.getkey_O_was_pressed() && AsteroidKeyRegulator == 0 && !Ship->getGameOverStatus()) {
 			AsteroidKeyRegulator = 60;
 			Asteroid_Deletion(1);
 		}
 
-		if (GameController.getkey_D_was_pressed()) {
+		if (GameController.getkey_D_was_pressed() && !Ship->getGameOverStatus()) {
 			for (int i = 0;i < EntityVector.size();i++) {
 				EntityVector[i]->setDebugging(true);
 			}
 		}
 
-		if (GameController.getkey_F_was_pressed()) {
+		if (GameController.getkey_F_was_pressed() && !Ship->getGameOverStatus()) {
 			PlotIsVisible = true;
 		}
 
-		if (GameController.getkey_Space_was_pressed() && BulletKeyRegulator == 0) {
+		if (GameController.getkey_Space_was_pressed() && BulletKeyRegulator == 0 && !Ship->getGameOverStatus() && Ship->getRespawningStatus()) {
 			BulletKeyRegulator = 15;
 			Bullet* currentBullet = Ship->Shoot();
 			BulletVector.push_back(currentBullet);
 			EntityVector.push_back(currentBullet);
+			SoundEngine->play2D("sounds/fire.wav");
+
+			if (GameController.getkey_R_was_pressed()) {
+				RestartGame();
+			}
 		}
 
 	}
+
+
 	void App::UpdateFrames(void)
 	{
 		Frames[FramePosition] = Vector2((float)FramePosition, deltaTime);
@@ -332,6 +397,7 @@ namespace Engine
 	{
 		// Init the external dependencies
 		//
+		
 		bool success = SDLInit() && GlewInit();
 		if (!success)
 		{
@@ -374,6 +440,9 @@ namespace Engine
 		case SDL_SCANCODE_D:
 			GameController.setkey_D_was_pressed(true);
 			break;
+		case SDL_SCANCODE_R:
+			GameController.setkey_R_was_pressed(true);
+			break;
 		case SDL_SCANCODE_F:
 			GameController.setkey_F_was_pressed(true);
 			break;
@@ -412,6 +481,9 @@ namespace Engine
 		case SDL_SCANCODE_D:
 			GameController.setkey_D_was_pressed(false);
 			break;
+		case SDL_SCANCODE_R:
+			GameController.setkey_R_was_pressed(false);
+			break;
 		case SDL_SCANCODE_F:
 			GameController.setkey_F_was_pressed(false);
 			break;
@@ -435,25 +507,61 @@ namespace Engine
 			BulletKeyRegulator--;
 		}
 
+		if (GameScore > ScoreRequirement ) {
+			ScoreRequirement += 1000;
+			if (Ship->getPlayerLives() < 5) {
+				Ship->AddLives(1);
+			}
+		}
+
 		double startTime = m_timer->GetElapsedTimeInSeconds();
 
 		// Update code goes here
 		//
-		
+
+		if (Ship->getPlayerLives() == 0) {
+			Ship->setGameOver(true);
+		}
+		if (CountTimer != -1) {
+			CountTimer--;
+		}
+
+		if (CountTimer == 0) {
+			Ship->setRespawning(true);
+			if (Ship->getPlayerLives() > 0) {
+				Ship->setGameOver(false);
+			}
+		}
+
+		if (!Ship->getRespawningStatus()) {
+			if (Ship->getPlayerLives() > 0) {
+				if (Ship->getGameOverStatus()) {
+					Ship->setGameOver(false);
+				}
+				else
+					if (!Ship->getGameOverStatus()) {
+						Ship->setGameOver(true);
+					}
+			}
+		}
+
 		AsteroidSplitting();
 		PlayerCrash();
 
-
+		
 
 		for (int i = 0; i < EntityVector.size();i++) {
 			EntityVector[i]->Update(DESIRED_FRAME_TIME);
 		}
-
+		if (AsteroidVector.size() == 0) {
+			LevelCount++;
+			Asteroid_Creation(LevelCount);
+		}
 
 		double endTime = m_timer->GetElapsedTimeInSeconds();
 		double nextTimeFrame = startTime + DESIRED_FRAME_TIME;
 
-		deltaTime = DESIRED_FRAME_TIME - (endTime - startTime);
+		deltaTime = (float)(DESIRED_FRAME_TIME - (endTime - startTime));
 		UpdateFrames();
 
 		while (endTime < nextTimeFrame)
@@ -477,7 +585,7 @@ namespace Engine
 		glClearColor(0,0,0,1);
 		glClear(GL_COLOR_BUFFER_BIT);
 	
-		
+	
 		for (int i = 0;i < EntityVector.size();i++) {
 			EntityVector[i]->Render();
 		}
@@ -487,6 +595,8 @@ namespace Engine
 		if (PlotIsVisible)
 			ShowFrames();
 		SDL_GL_SwapWindow(m_mainWindow);
+
+		
 	}
 
 	bool App::SDLInit()
